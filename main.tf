@@ -1,12 +1,12 @@
 terraform {
 
-  backend "s3" {
-    bucket         = "iac-state-lidor"
-    key            = "prod/terraform.tfstate"
-    region         = "eu-west-1"
-    encrypt        = true
-    dynamodb_table = "iac-state"
-  }
+#  backend "s3" {
+#    bucket         = "iac-state-lidor"
+#    key            = "prod/terraform.tfstate"
+#    region         = "eu-west-1"
+#    encrypt        = true
+#    dynamodb_table = "iac-state"
+#  }
 
   required_providers {
     aws = {
