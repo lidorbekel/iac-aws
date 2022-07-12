@@ -10,6 +10,7 @@ variable "description" {
 }
 
 variable "availability_zone" {
+    default = ""
     description = "The availability zone for both the AWS instance and the EBS volume."
     type = string
 }
