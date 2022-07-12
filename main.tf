@@ -101,4 +101,5 @@ module "run_docker_example" {
   vpc_security_group_ids = [aws_security_group.allow_http.id]
   associate_public_ip_address = true
   persistent_volume_size_gb = 1
+  
 }
