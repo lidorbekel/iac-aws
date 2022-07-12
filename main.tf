@@ -9,10 +9,10 @@ terraform {
 #  }
 
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "3.26.0"
-    }
+#    aws = {
+#      source  = "hashicorp/aws"
+#      version = "3.26.0"
+#    }
     random = {
       source  = "hashicorp/random"
       version = "3.0.1"
@@ -32,22 +32,73 @@ terraform {
 provider "aws" {
   region = "eu-west-1"
 }
+variable "example_docker_compose" {
+  type = string
+  default =  <<EOF
+version: "3.1"
+services:
+  hello:
+    image: nginxdemos/hello
+    restart: always
+    ports:
+      - 80:80
+EOF
+}
 
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+# Configure the VPC that we will use.
+resource "aws_vpc" "prod" {
+  cidr_block = "10.0.0.0/16"
+  enable_dns_hostnames = true
+}
 
-  name = "lidor-vpc"
-  cidr = "10.0.0.0/16"
+resource "aws_internet_gateway" "prod" {
+  vpc_id = aws_vpc.prod.id
+}
 
-  azs             = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+resource "aws_route" "prod__to_internet" {
+  route_table_id = aws_vpc.prod.main_route_table_id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.prod.id
+}
 
-  enable_nat_gateway = true
-  enable_vpn_gateway = true
+resource "aws_subnet" "prod" {
+  vpc_id = aws_vpc.prod.id
+  availability_zone = "us-east-1a"
+  cidr_block = "10.0.0.0/18"
+  map_public_ip_on_launch = true
+  depends_on = [aws_internet_gateway.prod]
+}
 
-  tags = {
-    Terraform = "true"
-    Environment = "prod"
+# Allow port 80 so we can connect to the container.
+resource "aws_security_group" "allow_http" {
+  name = "allow_http"
+  description = "Show off how we run a docker-compose file."
+
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Make sure to download the other files into the `modules/one_docker_instance_on_ec2`
+# directory
+module "run_docker_example" {
+  source =  "./modules/one_docker_instance_on_ec2"
+  name = "ec2-docker-demo"
+  key_name = "ssh-key"
+  instance_type = "t3.nano"
+  docker_compose_str = var.example_docker_compose
+  subnet_id = aws_subnet.prod.id
+  availability_zone = aws_subnet.prod.availability_zone
+  vpc_security_group_ids = [aws_security_group.allow_http.id]
+  associate_public_ip_address = true
+  persistent_volume_size_gb = 1
 }
