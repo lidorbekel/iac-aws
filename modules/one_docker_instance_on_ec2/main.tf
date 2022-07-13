@@ -83,7 +83,7 @@ resource "aws_volume_attachment" "persistent" {
 }
 
 resource "aws_instance" "this" {
-    ami = "ami-00f881f027a6d74a0"
+    ami = "ami-0d71ea30463e0ff8d"
     availability_zone = var.availability_zone
     instance_type = var.instance_type
     key_name = var.key_name
