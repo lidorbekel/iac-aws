@@ -91,7 +91,7 @@ resource "aws_security_group" "allow_http" {
 }
 
 # Make sure to download the other files into the `modules/one_docker_instance_on_ec2`
-# directory
+# directory 
 module "run_docker_example" {
   source =  "./modules/one_docker_instance_on_ec2"
   name = "ec2-docker-demo"
