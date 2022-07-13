@@ -37,6 +37,9 @@ chkconfig docker on
 yum install -y python3-pip
 python3 -m pip install docker-compose
 
+#install SSM
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+
 # Put the docker-compose.yml file at the root of our persistent volume
 cat > $DEST/docker-compose.yml <<-TEMPLATE
 ${var.docker_compose_str}
