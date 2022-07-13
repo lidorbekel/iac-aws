@@ -62,14 +62,14 @@ systemctl start my_custom_service
 EOF
 }
 
-data "aws_ami" "latest_amazon_linux" {
-    most_recent = true
-    owners = ["amazon"]
-    filter {
-        name = "name"
-        values = ["amzn*"]
-    }
-}
+# data "aws_ami" "latest_amazon_linux" {
+#     most_recent = true
+#     owners = ["amazon"]
+#     filter {
+#         name = "name"
+#         values = ["amzn*"]
+#     }
+# }
 
 resource "aws_ebs_volume" "persistent" {
     availability_zone = aws_instance.this.availability_zone
@@ -83,7 +83,7 @@ resource "aws_volume_attachment" "persistent" {
 }
 
 resource "aws_instance" "this" {
-    ami = data.aws_ami.latest_amazon_linux.id
+    ami = "ami-00f881f027a6d74a0"
     availability_zone = var.availability_zone
     instance_type = var.instance_type
     key_name = var.key_name
