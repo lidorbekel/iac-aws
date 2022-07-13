@@ -9,16 +9,16 @@ terraform {
   
 #  }
 
-  required_providers {
+#  required_providers {
 #    aws = {
 #      source  = "hashicorp/aws"
 #      version = "3.26.0"
 #    }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.0.1"
-    }
-  }
+#    random = {
+#      source  = "hashicorp/random"
+#      version = "3.0.1"
+#    }
+#  }
   required_version = ">= 1.1.0"
 
   cloud {
@@ -95,7 +95,7 @@ resource "aws_security_group" "allow_http" {
 module "run_docker_example" {
   source =  "./modules/one_docker_instance_on_ec2"
   name = "ec2-docker-demo"
-  key_name = "ssh-key"
+  key_name = "ssh"
   instance_type = "t3.nano"
   docker_compose_str = var.example_docker_compose
   subnet_id = aws_subnet.prod.id
