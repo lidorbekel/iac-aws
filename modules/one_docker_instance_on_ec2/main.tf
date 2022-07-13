@@ -82,6 +82,12 @@ resource "aws_volume_attachment" "persistent" {
     instance_id = aws_instance.this.id
 }
 
+resource "aws_iam_instance_profile" "ec2_profile" {
+    name = "ec2_profile"
+    role = "AmazonSSMFullAccess"
+    
+    
+}
 resource "aws_instance" "this" {
     ami = "ami-0d71ea30463e0ff8d"
     availability_zone = var.availability_zone
@@ -90,7 +96,7 @@ resource "aws_instance" "this" {
     associate_public_ip_address = var.associate_public_ip_address
     vpc_security_group_ids = var.vpc_security_group_ids
     subnet_id = var.subnet_id
-    iam_instance_profile = var.iam_instance_profile
+    iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
     user_data = local.user_data
     tags = merge (
         {
