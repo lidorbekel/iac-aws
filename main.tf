@@ -73,6 +73,7 @@ resource "aws_subnet" "prod" {
 # Allow port 80 so we can connect to the container.
 resource "aws_security_group" "allow_http" {
   name = "allow_http"
+  vpc_id = aws_vpc.prod.id
   description = "Show off how we run a docker-compose file."
 
   ingress {
