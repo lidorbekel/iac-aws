@@ -20,10 +20,10 @@ variable "docker_compose" {
 version: "3.1"
 services:
   hello:
-    image: nginxdemos/hello
+    image: public.ecr.aws/t6p6b9i9/lidor-web-project:latest
     restart: always
     ports:
-      - 80:80
+      - 8080:80
 EOF
 }
 
