@@ -1,24 +1,5 @@
 terraform {
 
-#  backend "s3" {
-#    bucket         = "iac-state-lidor"
-#    key            = "prod/terraform.tfstate"
-#    region         = "eu-west-1"
-#    encrypt        = true
-#    dynamodb_table = "iac-state"
-  
-#  }
-
-  required_providers {
-#    aws = {
-#      source  = "hashicorp/aws"
-#      version = "3.26.0"
-#    }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.0.1"
-    }
-  }
   required_version = ">= 1.1.0"
 
   cloud {
@@ -29,11 +10,11 @@ terraform {
     }
   }
 }
-
 provider "aws" {
   region = "eu-west-1"
 }
-variable "example_docker_compose" {
+
+variable "docker_compose" {
   type = string
   default =  <<EOF
 version: "3.1"
@@ -74,7 +55,7 @@ resource "aws_subnet" "prod" {
 resource "aws_security_group" "allow_http" {
   name = "allow_http"
   vpc_id = aws_vpc.prod.id
-  description = "Show off how we run a docker-compose file."
+  description = "security group"
 
   ingress {
     from_port = 80
@@ -89,15 +70,13 @@ resource "aws_security_group" "allow_http" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-# Make sure to download the other files into the `modules/one_docker_instance_on_ec2`
-# directory 
-module "run_docker_example" {
+ 
+module "run_docker" {
   source =  "./modules/one_docker_instance_on_ec2"
-  name = "ec2-docker-demo"
+  name = "lidor-web-demo"
   key_name = "ssh"
   instance_type = "t3.nano"
-  docker_compose_str = var.example_docker_compose
+  docker_compose_str = var.docker_compose
   subnet_id = aws_subnet.prod.id
   availability_zone = aws_subnet.prod.availability_zone
   vpc_security_group_ids = [aws_security_group.allow_http.id]

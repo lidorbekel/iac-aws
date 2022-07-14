@@ -81,3 +81,9 @@ variable "persistent_volume_mount_path" {
     type = string
     default = "/persistent"
 }
+
+variable "iam_policy_arn" {
+  description = "IAM Policy to be attached to role"
+  type = list(string)
+  default = ["arn:aws:iam::aws:policy/AmazonSSMFullAccess", "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess","arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess"]
+}

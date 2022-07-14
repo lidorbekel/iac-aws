@@ -1,5 +1,6 @@
 locals {
     block_device_path = "/dev/sdh"
+
     user_data = <<EOF
 #!/bin/bash
 set -Eeuxo pipefail
@@ -85,12 +86,34 @@ resource "aws_volume_attachment" "persistent" {
     instance_id = aws_instance.this.id
 }
 
+resource "aws_iam_role" "myrole" {
+  name = "lidor-project-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "role-policy-attachment" {
+  role       = aws_iam_role.myrole.name
+  count      = "${length(var.iam_policy_arn)}"
+  policy_arn = "${var.iam_policy_arn[count.index]}"
+}
+
 resource "aws_iam_instance_profile" "ec2_profile" {
     name = "ec2_profile"
-    role = "AmazonSSMFullAccess"
-    
-    
+    role = aws_iam_role.myrole.name
 }
+
 resource "aws_instance" "this" {
     ami = "ami-0d71ea30463e0ff8d"
     availability_zone = var.availability_zone
