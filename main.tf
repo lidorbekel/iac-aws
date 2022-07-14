@@ -23,7 +23,7 @@ services:
     image: public.ecr.aws/t6p6b9i9/lidor-web-project:latest
     restart: always
     ports:
-      - 8080:80
+      - 80:8080
 EOF
 }
 
