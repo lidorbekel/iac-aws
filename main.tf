@@ -51,7 +51,7 @@ resource "aws_subnet" "prod" {
   depends_on = [aws_internet_gateway.prod]
 }
 
-# Allow port 80 so we can connect to the container.
+# Allow port 80 so we can connect to the container. test
 resource "aws_security_group" "allow_http" {
   name = "allow_http"
   vpc_id = aws_vpc.prod.id
