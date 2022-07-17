@@ -38,9 +38,6 @@ chkconfig docker on
 yum install -y python3-pip
 python3 -m pip install docker-compose
 
-#install SSM
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-
 # Put the docker-compose.yml file at the root of our persistent volume
 cat > $DEST/docker-compose.yml <<-TEMPLATE
 ${var.docker_compose_str}
@@ -63,17 +60,19 @@ WantedBy=multi-user.target
 TEMPLATE
 # Start the service.
 systemctl start my_custom_service
+    
+
+#!/bin/bash
+echo "Before SSM installation"
+cd /tmp
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+echo "Finished SSM installation"
+    
 EOF
 }
 
-# data "aws_ami" "latest_amazon_linux" {
-#     most_recent = true
-#     owners = ["amazon"]
-#     filter {
-#         name = "name"
-#         values = ["amzn*"]
-#     }
-# }
 
 resource "aws_ebs_volume" "persistent" {
     availability_zone = aws_instance.this.availability_zone
