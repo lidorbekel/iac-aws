@@ -1,1 +1,1 @@
-#  Test Automate Terraform with GitHub Actions
+#  Test Automate Terraform with GitHub Actions.
